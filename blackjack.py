@@ -14,7 +14,6 @@ userRandomCards = []
 session = 0
 game = True
 loadingValue = -5
-wGivenPrize = 0
 
 
 def clear():
@@ -22,6 +21,7 @@ def clear():
 
 
 def userAdder(pCount):
+    """It adds users to the 'userList' as the person count given."""
     for place in range(0, pCount):
         userList.append({"Name": input("Your Name?\n"),
                         "Value": int(input("Your Total Cash Value?\n")), "Points": 0, "Disq": "none"})
@@ -34,6 +34,7 @@ def userAdder(pCount):
 
 
 def bidPicker(pCount):
+    """It adds bids to the 'userBidAmount as the bid amount given."""
     for place in range(1, pCount+1):
         person = userList[place]["Name"]
         while _:
@@ -55,10 +56,11 @@ def bidPicker(pCount):
 
 
 def randomCards(pCount):
+    """It adds random cards to the userRandomCards as the desired amount and computes the points who wins and who loses the game."""
     n = 3
     computer = userList[0]
 
-    # Bilgisayarın kartları
+    # Computers Cards
     userRandomCards.append({"card1": cards[cardRandomerList[random.randint(
         0, 12)]], "card2": cards[cardRandomerList[random.randint(0, 12)]]})
     userList[0]["Points"] += userRandomCards[0]["card1"] + \
@@ -84,7 +86,7 @@ def randomCards(pCount):
             person = userList[place]["Name"]
             bidAmount = userBidAmount[place-1]["bidAmount"]
 
-            # Bizim rastgele kartlarımız
+            # Our Random Cards
             userRandomCards.append({"card1": cards[cardRandomerList[random.randint(
                 0, 12)]], "card2": cards[cardRandomerList[random.randint(0, 12)]]})
             if pointChecker:
@@ -100,8 +102,6 @@ def randomCards(pCount):
                     0, 12)]]
                 userList[place]["Points"] += userRandomCards[place][f"card{cardCounter}"]
                 cardCounter += 1
-                # print(point)
-                # print(userList[place]["Points"])
 
                 if userList[place]["Points"] > 21:
                     print("You disqualified")
@@ -119,25 +119,27 @@ def randomCards(pCount):
                 else:
                     userList[place]["Disq"] = "Disqualified"
                 break
-
+    time.sleep(4)
+    clear()
     winners = 0
+    totalBid = 0
     for place in range(1, pCount+1):
         if userList[place]["Disq"] == "prizeWinner":
             winners += 1
+            totalBid += userBidAmount[place]["bidAmount"]
     if winners == 0:
-        print("No winners here :/")
+        print("No winners here :/\n")
         givenPrize = 0
     else:
-        givenPrize = computer["Value"] / winners
-        wGivenPrize = givenPrize
-        computer["Value"] = 0
-    print("Winners\n-------")
-    for place in range(1, pCount+1):
-        if userList[place]["Disq"] == "prizeWinner":
-            userList[place]["Value"] += givenPrize
-            userBidAmount[place-1]["bidAmount"] = 0
-            print(userList[place]["Name"],
-                  "is winner! Total gain is", userList[place]["Value"])
+        givenPrize = totalBid / winners
+        computer["Value"] -= totalBid
+        print("Winners\n-------")
+        for place in range(1, pCount+1):
+            if userList[place]["Disq"] == "prizeWinner":
+                userList[place]["Value"] += givenPrize
+                userBidAmount[place-1]["bidAmount"] = 0
+                print(userList[place]["Name"],
+                      "is winner! Total gain is", givenPrize)
 
 
 print("Welcome to Blackjack game!")
@@ -146,7 +148,6 @@ userAdder(personCount)
 time.sleep(3+personCount*2)
 clear()
 
-# son ve önceki total cash sistemöi düzgün çalışmıyor
 # Loading part of the game
 for _ in range(0, 20):
     loadingValue += random.randint(5, 20)
@@ -177,7 +178,6 @@ while game:
     bidPicker(personCount)
     randomCards(personCount)
 
-    # görsel iyileştirmeler yapacağım.
     print("Current Situations")
     for person in range(0, len(userList)):
         name = userList[person]["Name"]
@@ -186,10 +186,8 @@ while game:
             print(f"Bank has ${value} in the safe")
         else:
             print(
-                f"{name} has left ${value} in total, previous total cash is ${value - wGivenPrize}")
+                f"{name} has left ${value} in total")
 
-    time.sleep(4+personCount*4)
+    time.sleep(5+personCount*5)
     if session >= 5:
         break
-
-# keskin hediyelik
