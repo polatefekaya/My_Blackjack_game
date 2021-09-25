@@ -14,6 +14,7 @@ userRandomCards = []
 session = 0
 game = True
 loadingValue = -5
+wGivenPrize = 0
 
 
 def clear():
@@ -25,7 +26,7 @@ def userAdder(pCount):
         userList.append({"Name": input("Your Name?\n"),
                         "Value": int(input("Your Total Cash Value?\n")), "Points": 0, "Disq": "none"})
         clear()
-    print("Participians\n____________")
+    print("Participians\n------------")
 
     for place in range(1, pCount+1):
         print(userList[place]["Name"], "joined with $",
@@ -49,6 +50,8 @@ def bidPicker(pCount):
     for place in range(0, pCount):
         print(userList[place+1]["Name"], "puts $",
               userBidAmount[place]["bidAmount"], "in this round")
+    time.sleep(personCount*2+2)
+    clear()
 
 
 def randomCards(pCount):
@@ -70,7 +73,8 @@ def randomCards(pCount):
             computer["Points"] -= userRandomCards[0][f"card{n}"]
             break
         n+1
-
+    cCard = userRandomCards[0]["card1"]
+    print(f"Computer's cards are {cCard} and ...")
     for place in range(1, pCount+1):
         cardCounter = 3
         pointChecker = True
@@ -89,15 +93,15 @@ def randomCards(pCount):
                 pointChecker = False
             point = userList[place]["Points"]
             print(
-                f"{person}, with ${bidAmount} ---> {userRandomCards[place]}, your total point is {point}")
+                f"{person}, with ${bidAmount} ---> {userRandomCards[place]}\nyour total point is {point}")
 
             if input("Do you want to get another card?(y or n)\n") == "y":
                 userRandomCards[place][f"card{cardCounter}"] = cards[cardRandomerList[random.randint(
                     0, 12)]]
                 userList[place]["Points"] += userRandomCards[place][f"card{cardCounter}"]
                 cardCounter += 1
-                print(point)
-                print(userList[place]["Points"])
+                # print(point)
+                # print(userList[place]["Points"])
 
                 if userList[place]["Points"] > 21:
                     print("You disqualified")
@@ -120,29 +124,29 @@ def randomCards(pCount):
     for place in range(1, pCount+1):
         if userList[place]["Disq"] == "prizeWinner":
             winners += 1
-    print(winners)
     if winners == 0:
         print("No winners here :/")
+        givenPrize = 0
     else:
         givenPrize = computer["Value"] / winners
+        wGivenPrize = givenPrize
         computer["Value"] = 0
-        print(givenPrize)
-    print("Winners\n_______")
+    print("Winners\n-------")
     for place in range(1, pCount+1):
         if userList[place]["Disq"] == "prizeWinner":
             userList[place]["Value"] += givenPrize
             userBidAmount[place-1]["bidAmount"] = 0
             print(userList[place]["Name"],
-                  "is winner! Total cash amount is", userList[place]["Value"])
+                  "is winner! Total gain is", userList[place]["Value"])
 
 
 print("Welcome to Blackjack game!")
 personCount = int(input("How many players you are?\n"))
 userAdder(personCount)
-time.sleep(personCount*3)
+time.sleep(3+personCount*2)
 clear()
 
-
+# son ve önceki total cash sistemöi düzgün çalışmıyor
 # Loading part of the game
 for _ in range(0, 20):
     loadingValue += random.randint(5, 20)
@@ -157,9 +161,11 @@ for _ in range(0, 20):
 
 
 while game:
+    clear()
     session += 1
     print(f"Game Session{session} is Starting")
     time.sleep(2)
+    clear()
     if session > 1:
         for place in range(0, personCount+1):
             userList[place]["Points"] = 0
@@ -172,6 +178,18 @@ while game:
     randomCards(personCount)
 
     # görsel iyileştirmeler yapacağım.
-    print(userList)
+    print("Current Situations")
+    for person in range(0, len(userList)):
+        name = userList[person]["Name"]
+        value = userList[person]["Value"]
+        if person == 0:
+            print(f"Bank has ${value} in the safe")
+        else:
+            print(
+                f"{name} has left ${value} in total, previous total cash is ${value - wGivenPrize}")
+
+    time.sleep(4+personCount*4)
     if session >= 5:
         break
+
+# keskin hediyelik
