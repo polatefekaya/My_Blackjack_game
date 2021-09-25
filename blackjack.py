@@ -12,8 +12,9 @@ userBidAmount = []
 userRandomCards = []
 
 session = 0
-game = True
 loadingValue = -5
+card1Control = True
+card2Control = True
 
 
 def clear():
@@ -93,7 +94,26 @@ def randomCards(pCount):
                 userList[place]["Points"] += userRandomCards[place]["card1"] + \
                     userRandomCards[place]["card2"]
                 pointChecker = False
+
             point = userList[place]["Points"]
+
+            if userRandomCards[place]["card1"] == 1 and card1Control:
+                print(
+                    f"Your current point is {point} if you choose 11, your point is going to be {point +10}")
+                if input("you have an 'A' in Card 1, do you want 11 or 1?\n") == 11:
+                    userRandomCards[place]["card1"] = 11
+                    userList[place]["Points"] += 10
+                    point = userList[place]["Points"]
+                    card1Control = False
+
+            if userRandomCards[place]["card2"] == 1 and card2Control:
+                print(
+                    f"Your current point is {point} if you choose 11, your point is going to be {point +10}")
+                if input("You have an 'A' in Card 2, do you want 11 or 1?\n") == 11:
+                    userRandomCards[place]["card2"] = 11
+                    userList[place]["Points"] += 10
+                    point = userList[place]["Points"]
+                    card2Control = False
             print(
                 f"{person}, with ${bidAmount} ---> {userRandomCards[place]}\nyour total point is {point}")
 
@@ -101,6 +121,16 @@ def randomCards(pCount):
                 userRandomCards[place][f"card{cardCounter}"] = cards[cardRandomerList[random.randint(
                     0, 12)]]
                 userList[place]["Points"] += userRandomCards[place][f"card{cardCounter}"]
+
+                currentCard = userRandomCards[place][f"card{cardCounter}"]
+                if currentCard == 1:
+                    print(
+                        f"Your current point is {point} if you choose 11, your point is going to be {point +10}")
+                    if input(f"You have an 'A' in Card {cardCounter}, do you want 11 or 1?\n") == 11:
+                        userRandomCards[place][f"card{cardCounter}"] = 11
+                        userList[place]["Points"] += 10
+                        point = userList[place]["Points"]
+
                 cardCounter += 1
 
                 if userList[place]["Points"] > 21:
@@ -126,9 +156,10 @@ def randomCards(pCount):
     for place in range(1, pCount+1):
         if userList[place]["Disq"] == "prizeWinner":
             winners += 1
-            totalBid += userBidAmount[place]["bidAmount"]
+            totalBid += userBidAmount[place-1]["bidAmount"]
     if winners == 0:
-        print("No winners here :/\n")
+        bankPoint = userList[0]["Points"]
+        print(f"Bank made {bankPoint}, No winners here :/\n")
         givenPrize = 0
     else:
         givenPrize = totalBid / winners
@@ -161,7 +192,7 @@ for _ in range(0, 20):
     clear()
 
 
-while game:
+while _:
     clear()
     session += 1
     print(f"Game Session{session} is Starting")
